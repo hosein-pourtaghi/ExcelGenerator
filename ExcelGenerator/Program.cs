@@ -14,7 +14,7 @@ namespace ExcelGenerator
             var students = GetStudentList().OrderBy(s => s.Name).ToList(); // Fetch and sort students by name
 
             var templatePath = "./template.xlsx"; // Path to your Excel file A
-            var outputPath = "./fileB.xlsx"; // Path to save Excel file B
+            var outputPath = "../fileB.xlsx"; // Path to save Excel file B
 
             using (var templatePackage = new ExcelPackage(new FileInfo(templatePath)))
             {
