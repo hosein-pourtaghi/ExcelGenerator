@@ -17,10 +17,19 @@ namespace ExcelGenerator
             var outputPath = "./fileB.xlsx"; // Path to save Excel file B
 
             using (var templatePackage = new ExcelPackage(new FileInfo(templatePath)))
-            {templatePackage.Workbook.Worksheets
-                var templateWorksheet = [0];
+            {
+                var templateWorksheet = templatePackage.Workbook.Worksheets[0];
+                Console.WriteLine($"Number of worksheets: {templatePackage.Workbook.Worksheets.Count}");
+
+
+                // Log the names of all available worksheets
+                foreach (var sheet in templatePackage.Workbook.Worksheets)
+                {
+                    Console.WriteLine($"Worksheet name: {sheet.Name}");
+                }
 
                 // Create a new Excel package for output
+
                 using (var outputPackage = new ExcelPackage())
                 {
                     var outputWorksheet = outputPackage.Workbook.Worksheets.Add("Sheet1");
@@ -34,16 +43,33 @@ namespace ExcelGenerator
 
                     foreach (var student in students)
                     {
-                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Name]", student.Name);
-                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Age]", student.Age);
-                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Grade]", student.Grade);
+                        // Insert student data into the worksheet
+                        int row = 2; // Start from the second row (assuming the first row is for headers) 
+                        foreach (var s in students)
+                        {
+                            outputWorksheet.Cells[row, 1].Value = s.Name; // Column 1 for Name
+                            outputWorksheet.Cells[row, 2].Value = s.Age;  // Column 2 for Age
+                            outputWorksheet.Cells[row, 3].Value = s.Grade; // Column 3 for Grade
+                            row++;
+                        }
                     }
 
                     // Fill in the StudentSum shortcode
-                    FindAndReplaceShortcode(outputWorksheet, "[StudentSum]", students.Count);
+                    // FindAndReplaceShortcode(outputWorksheet, "[StudentSum]", students.Count);
+                    Console.WriteLine("Excel file B finished.");
 
-                    // Save the new file
-                    outputPackage.SaveAs(new FileInfo(outputPath));
+                    try
+                    {
+                        // Save the new file
+                        outputPackage.SaveAs(new FileInfo(outputPath));
+                        Console.WriteLine("Excel file B saved.");
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("exception eccur", e.Message);
+                    }
+
                 }
             }
 
@@ -68,6 +94,15 @@ namespace ExcelGenerator
             return new List<Student>
             {
                 new Student { Name = "John Doe", Age = 20, Grade = "A" },
+                new Student { Name = "John Doe", Age = 2, Grade = "A" },
+                new Student { Name = "John Doe", Age = 23, Grade = "A" },
+                new Student { Name = "John Doe", Age = 24, Grade = "A" },
+                new Student { Name = "John Doe", Age = 25, Grade = "A" },
+                new Student { Name = "John Doe", Age = 26, Grade = "A" },
+                new Student { Name = "John Doe", Age = 27, Grade = "A" },
+                new Student { Name = "John Doe", Age = 21, Grade = "A" },
+                new Student { Name = "John Doe", Age = 27, Grade = "A" },
+                new Student { Name = "John Doe", Age = 26, Grade = "A" },
                 new Student { Name = "Jane Smith", Age = 22, Grade = "B" }
                 // Add more students as needed
             };
