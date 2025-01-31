@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using OfficeOpenXml;
@@ -9,7 +9,8 @@ namespace ExcelGenerator
     {
         static void Main(string[] args)
         {
-            var students = GetStudentList(); // Fetch from your database
+var students = GetStudentList().OrderBy(s => s.Name).ToList(); // Fetch and sort students by name
+
             var templatePath = "path/to/your/template.xlsx"; // Path to your Excel file A
             var outputPath = "path/to/output/fileB.xlsx"; // Path to save Excel file B
 
@@ -25,8 +26,19 @@ namespace ExcelGenerator
                     // Copy structure and styles from template to output
                     templateWorksheet.Cells.Copy(outputWorksheet.Cells);
 
-                    // Replace shortcodes with actual data
-                    ReplaceShortcodes(outputWorksheet, students);
+                    // Replace shortcodes with actual data and additional shortcodes
+                    FindAndReplaceShortcode(outputWorksheet, "[title]", "Student List"); // Replace title shortcode
+                    FindAndReplaceShortcode(outputWorksheet, "[logo]", "path/to/logo.png"); // Replace logo shortcode
+
+                    foreach (var student in students)
+                    {
+                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Name]", student.Name);
+                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Age]", student.Age);
+                        FindAndReplaceShortcode(outputWorksheet, "[studentListData.Grade]", student.Grade);
+                    }
+
+                    // Fill in the StudentSum shortcode
+                    FindAndReplaceShortcode(outputWorksheet, "[StudentSum]", students.Count);
 
                     // Save the new file
                     outputPackage.SaveAs(new FileInfo(outputPath));
@@ -36,25 +48,16 @@ namespace ExcelGenerator
             Console.WriteLine("Excel file B created successfully.");
         }
 
-        static void ReplaceShortcodes(ExcelWorksheet worksheet, List<Student> students)
+        static void FindAndReplaceShortcode(ExcelWorksheet worksheet, string shortcode, object value)
         {
-            // Example shortcode replacements
-            worksheet.Cells["A1"].Value = "Your Logo Here"; // Replace [logo]
-            worksheet.Cells["B1"].Value = "Your Title Here"; // Replace [title]
-
-            // Assuming student data starts at row 3
-            int startRow = 3;
-            foreach (var student in students)
+            // Search for the shortcode in the worksheet and replace it with the value
+            foreach (var cell in worksheet.Cells)
             {
-                worksheet.Cells[startRow, 1].Value = student.Name; // Replace [studentListData.Name]
-                worksheet.Cells[startRow, 2].Value = student.Age; // Replace [studentListData.Age]
-                worksheet.Cells[startRow, 3].Value = student.Grade; // Replace [studentListData.Grade]
-                startRow++;
+                if (cell.Text.Contains(shortcode))
+                {
+                    cell.Value = cell.Text.Replace(shortcode, value.ToString());
+                }
             }
-
-            // Fill in the StudentSum shortcode
-            worksheet.Cells[startRow, 1].Value = "Total Students:"; // Label for total
-            worksheet.Cells[startRow, 2].Value = students.Count; // Replace [StudentSum]
         }
 
         static List<Student> GetStudentList()
