@@ -67,7 +67,7 @@ namespace ExcelGenerator
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("exception eccur", e.Message);
+                        Console.WriteLine("exception occur", e.Message);
                     }
 
                 }
